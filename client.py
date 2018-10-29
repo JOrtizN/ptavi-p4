@@ -9,7 +9,7 @@ import socket
 # Constantes. Dirección IP del servidor y contenido a enviar
 SERVER = 'localhost'
 PORT = 6001
-LINE = '¡Hola mundo!'
+LINE = '¡Hola mundo! \r\nMe llamo Julia \r\nEstoy feliz'
 
 # Creamos el socket, lo configuramos y lo atamos a un servidor/puerto
 with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as my_socket:
