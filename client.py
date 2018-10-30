@@ -16,17 +16,19 @@ if(len(sys.argv) > 3):
     LINE = " ".join(list_line)
     #print("LINE:",LINE[0])
     #print(R)
-    def register():
-        REGISTER = 'REGISTER sip:'+ USER + ' SIP/2.0\r\n\r\n'
-        my_socket.send(bytes(REGISTER, 'utf-8'))
-        #print(REGISTER)
+    def register_exp():
+        REGISTER = 'REGISTER sip:'+ USER + ' SIP/2.0\r\n'
+        EXPIRES = REGISTER +'EXPIRES: ' + str(TIME) + '\r\n'
+        my_socket.send(bytes(EXPIRES, 'utf-8'))
+        print(EXPIRES)
 
     # Creamos el socket, lo configuramos y lo atamos a un servidor/puerto
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as my_socket:
         my_socket.connect((SERVER, PORT))
-        if (R == "REGISTER"):
+        if (R == "REGISTER" and len(sys.argv) >= 5 ):
             USER = sys.argv[4]
-            register()
+            TIME = int(sys.argv[5])
+            register_exp()
             print("Enviando: REGISTER sip:",USER, "SIP/2.0")
         else:
             print("Enviando:",SERVER, PORT, LINE)
