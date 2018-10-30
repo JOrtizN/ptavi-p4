@@ -12,7 +12,6 @@ if(len(sys.argv) > 3):
     SERVER = sys.argv[1]
     PORT = int(sys.argv[2])
     R = sys.argv[3]
-    USER = sys.argv[4]
     list_line = sys.argv[3:]
     LINE = " ".join(list_line)
     #print("LINE:",LINE[0])
@@ -26,6 +25,7 @@ if(len(sys.argv) > 3):
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as my_socket:
         my_socket.connect((SERVER, PORT))
         if (R == "REGISTER"):
+            USER = sys.argv[4]
             register()
             print("Enviando: REGISTER sip:",USER, "SIP/2.0")
         else:
