@@ -20,7 +20,7 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
 
         print("El cliente nos manda:")
         for line in self.rfile:
-            #print("line:", line.decode('utf-8'))
+            print("line:", line.decode('utf-8'))
             if (line.decode('utf-8')[0:8] == "REGISTER"):
                 list_registers = [self.client_address[0],line.decode('utf-8')[9:]]
                 self.wfile.write(b"SIP/2.0 200 OK\r\n\r\n")
