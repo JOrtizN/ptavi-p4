@@ -5,7 +5,11 @@ Clase (y programa principal) para un servidor de eco en UDP simple
 """
 
 import socketserver
-
+import sys
+if (len(sys.argv) == 2):
+    PORT = int(sys.argv[1])
+else:
+    sys.exit("Usage: <PORT>")
 
 class SIPRegisterHandler(socketserver.DatagramRequestHandler):
     """
@@ -26,7 +30,6 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
             if (line.decode('utf-8')[0:8] == "REGISTER"):
                 self.dicc_registers[mensaje[1].split(':')[-1]] = [IP]
                 self.wfile.write(b"SIP/2.0 200 OK\r\n\r\n")
-                #print ("EN register:", line.decode('utf-8'))
                 print (self.dicc_registers)
 
             elif (line == b'\r\n'):
@@ -40,7 +43,7 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
 if __name__ == "__main__":
     # Listens at localhost ('') port 6001
     # and calls the EchoHandler class to manage the request
-    serv = socketserver.UDPServer(('', 6002), SIPRegisterHandler)
+    serv = socketserver.UDPServer(('', PORT), SIPRegisterHandler)
 
     print("Lanzando servidor UDP de eco...")
     try:
