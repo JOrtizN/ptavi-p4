@@ -24,6 +24,16 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
         """
         json.dump(self.dicc_registers, open('registed.json','w'), indent=3)
 
+    def json2registered(self):
+        """
+        Si existe file_json lo pasa a mi diccionario
+        """
+        try:
+            with open ('registed.json','r') as file_json:
+                self.dicc_registers = json.load(file_json)
+        except FileNotFoundError:
+            pass
+
     def handle(self):
         """
         handle method of the server class
@@ -62,7 +72,7 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
                 self.register2json()
 
             elif (line == b'\r\n'):
-                continue
+                pass
 
             else:
                 print(IP, "\t",self.client_address[1], "\t", line.decode('utf-8'))
