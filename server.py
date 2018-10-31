@@ -6,6 +6,8 @@ Clase (y programa principal) para un servidor de eco en UDP simple
 
 import socketserver
 import sys
+import json
+import time
 if (len(sys.argv) == 2):
     PORT = int(sys.argv[1])
 else:
@@ -16,6 +18,12 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
     Echo server class
     """
     dicc_registers = {}
+    def register2json(self):
+        """
+        Convertir a json
+        """
+        json.dump(self.dicc_registers, open('registed.json','w'), indent=3)
+
     def handle(self):
         """
         handle method of the server class
@@ -26,7 +34,6 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
 
         for line in self.rfile:
             mensaje = line.decode('utf-8').split(" ")
-            #print("JULIA:", mensaje)
             if (mensaje[0] == "REGISTER"):
                 user = mensaje[1].split(':')[1]
                 self.dicc_registers[user] = [IP]
@@ -34,7 +41,26 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
             elif (mensaje[0] == "EXPIRES:"):
                 EXPIRES = mensaje[1].split(':')[-1]
                 if (EXPIRES == '0\r\n'):
-                    del self.dicc_registers[user]
+                    try:
+                        del self.dicc_registers[user]
+                    except:
+                        pass
+                else:
+                    register_date = time.time() + float(EXPIRES)
+                    register_date = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(register_date))
+                    now_date = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(time.time()))
+                    self.dicc_registers[user].append(register_date)
+                    self.register2json()
+
+                del_registers = []
+                now = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(time.time()))
+                for register in self.dicc_registers:
+                    if self.dicc_registers[register][1] <= now:
+                        del_registers.append(register)
+                for register in del_registers:
+                    del self.dicc_registers[register]
+                self.register2json()
+
             elif (line == b'\r\n'):
                 continue
 
