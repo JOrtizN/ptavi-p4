@@ -72,8 +72,7 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
                 pass
 
             else:
-                print(IP, "\t", PORT, "\t", line.decode('utf-8'))
-                self.wfile.write(line)
+                self.wfile.write(b"Solo contemplamos la opcion REGISTER")
         print(self.dicc_registers)
 
 
