@@ -1,8 +1,6 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-"""
-Clase (y programa principal) para un servidor de eco en UDP simple
-"""
+"""Clase (y programa principal) para un servidor de eco en UDP simple."""
 
 import socketserver
 import sys
@@ -13,33 +11,28 @@ if (len(sys.argv) == 2):
 else:
     sys.exit("Usage: <PORT>")
 
+
 class SIPRegisterHandler(socketserver.DatagramRequestHandler):
-    """
-    Echo server class
-    """
+    """Echo server class."""
+
     dicc_registers = {}
+
     def register2json(self):
-        """
-        Convertir a json
-        """
-        json.dump(self.dicc_registers, open('registed.json','w'), indent=3)
+        """Convertir a json."""
+        json.dump(self.dicc_registers, open('registed.json', 'w'), indent=3)
 
     def json2registered(self):
-        """
-        Si existe file_json lo pasa a mi diccionario
-        """
+        """Si existe file_json lo pasa a mi diccionario."""
         try:
-            with open ('registed.json','r') as file_json:
+            with open('registed.json', 'r') as file_json:
                 self.dicc_registers = json.load(file_json)
         except FileNotFoundError:
             pass
 
     def handle(self):
-        """
-        handle method of the server class
-        (all requests will be handled by this method)
-        """
+        """handle method of the server."""
         IP = self.client_address[0]
+        PORT = self.client_address[1]
         print("Registro de clientes:")
 
         for line in self.rfile:
@@ -53,17 +46,21 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
                 if (EXPIRES == '0\r\n'):
                     try:
                         del self.dicc_registers[user]
-                    except:
+                    except IndentationError:
                         pass
+
                 else:
                     register_date = time.time() + float(EXPIRES)
-                    register_date = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(register_date))
-                    now_date = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(time.time()))
+                    register_date = time.strftime('%Y-%m-%d %H:%M:%S',
+                                                  time.gmtime(register_date))
+                    now_date = time.strftime('%Y-%m-%d %H:%M:%S',
+                                             time.gmtime(time.time()))
                     self.dicc_registers[user].append(register_date)
                     self.register2json()
 
                 del_registers = []
-                now = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(time.time()))
+                now = time.strftime('%Y-%m-%d %H:%M:%S',
+                                    time.gmtime(time.time()))
                 for register in self.dicc_registers:
                     if self.dicc_registers[register][1] <= now:
                         del_registers.append(register)
@@ -75,12 +72,13 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
                 pass
 
             else:
-                print(IP, "\t",self.client_address[1], "\t", line.decode('utf-8'))
+                print(IP, "\t", PORT, "\t", line.decode('utf-8'))
                 self.wfile.write(line)
         print(self.dicc_registers)
 
+
 if __name__ == "__main__":
-    # Listens at localhost ('') port 6001
+    # Listens at localhost ('') port x
     # and calls the EchoHandler class to manage the request
     serv = socketserver.UDPServer(('', PORT), SIPRegisterHandler)
 
